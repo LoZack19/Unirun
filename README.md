@@ -5,16 +5,10 @@
 # Run
 ```c
 char* run(char* program, char* args[], int* status);
-char* which(char* path);
+#define WHICH(path) run("/usr/bin/which", genargs(3, "which", path, 0), NULL)
 ```
 
-The `run` function executes a program with its arguments, and returns the output. The `which` function is basically like:
-```c
-char* args[2];
-args[0] = "which";
-args[1] = path;
-run("/usr/bin/which", args, NULL);
-```
+The `run` function executes a program with its arguments, and returns the output. The `which` function is a wrapper of the `run` function built to expand the path of a program by launching the which command.
 
 ## Return value
 The return value of run is a pointer to a buffer which holds the output of the program and the status of the program (in the variable `int* stauts`)
