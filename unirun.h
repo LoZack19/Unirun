@@ -1,6 +1,8 @@
 #ifndef UNIRUN_H
 #define UNIRUN_H
 
+#include <stddef.h>
+
 #define BUFFER_SIZE     0x4000
 #define PATH_SIZE       0x400
 
