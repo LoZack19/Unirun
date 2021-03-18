@@ -9,6 +9,6 @@
 char* run(char* program, char* args[], int* status);
 char** genargs(size_t size, ...);
 
-#define WHICH(path) run("/usr/bin/which", genargs(3, "which", path, 0), NULL)
+#define WHICH(path) run("/usr/bin/which", genargs(3, "/usr/bin/which", path, NULL), NULL)
 
 #endif
