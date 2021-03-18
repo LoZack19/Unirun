@@ -37,7 +37,7 @@ char* run(char* program, char* args[], int* status)
         //child
         close(pipe_fd[0]);
         if(!~dup2(pipe_fd[1], STDOUT_FILENO)) {
-            perror("Failed to redirect stdout to th pipe");
+            perror("Failed to redirect stdout to the pipe");
             exit(-1);
         }
         close(pipe_fd[1]);
@@ -60,9 +60,49 @@ char* run(char* program, char* args[], int* status)
     close(pipe_fd[0]);
     wait(&tmp);
 
-    if(status)
+    if(status && WIFEXITED(tmp))
         *status = WEXITSTATUS(tmp);
     return buffer;
+}
+
+int launch(char* program, char* args[], int fd)
+{
+    int status;
+
+    switch (fork())
+    {
+    case -1:
+        perror("Failed to fork");
+        break;
+
+    case 0:
+        /* child */
+        // 1. Redirecting stdout
+        if(fd && ~fd && fd != STDOUT_FILENO) {
+            if(!~dup2(fd, STDOUT_FILENO)) {
+                perror("Failed to redirect stdout to the provided file descriptor");
+                fprintf(stderr, "Printing to the old stdout...\n");
+            }
+            if(!~close(fd))
+                perror("Failed to close file descriptor");
+        }
+
+        // Executing program (with execvp)
+        if(!~execvp(program, args))
+            fprintf(stderr, "Failed to execute %s: %s", program, strerror(errno));
+        exit(-1);
+    
+    default:
+        // extracting return value
+        wait(&status);
+        if(WIFEXITED(status))
+            status = WEXITSTATUS(status);
+        else
+            status = -1; // WEXITYSTATUS can't return (int)(-1)
+        break;
+    }
+
+    return status;
 }
 
 char** genargs(size_t size, ...)

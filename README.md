@@ -12,8 +12,18 @@ The `run` function executes a program with its arguments, and returns the output
 
 It can read up to `BUFFER_SIZE` bytes, which is set by default to `0x4000` or `16384` in `unirun.h`. If you compile the library from source, you can change that value to be higher or lower.  
 Note that `run` adjusts the size of the returned buffer to bmatch exactly the string length if it's lower than `BUFFER_SIZE`.
-## Return value
+### Return value
 The return value of run is a pointer to a buffer which holds the output of the program and the status of the program (in the variable `int* stauts`)
+
+## LAUNCH
+```c
+int launch(char* program, char* args[], int fd);
+#define TAR_EXTRACT(_tar)   launch("/usr/bin/tar", genargs(4, "/usr/bin/tar", "-xf", (_tar), NULL), open("/dev/null", O_WRONLY))
+```
+
+The `launch` function takes as input the name of a program to execute, a list of arguments and a file descriptor to redirect the `stdout` to, and returns the return value of the executed program.  
+If the file descriptor is 0, -1, or the same file descriptor as `stdout`, the redirect is not executed. If the redirect fails, this is reported on `stderr`.  
+The `execvp` function is used to execute the program; this means that the `PATH` environment variable is passed to the program.  
 
 ## GENARGS
 ```c
