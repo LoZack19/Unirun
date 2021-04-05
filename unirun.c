@@ -97,7 +97,7 @@ char **genargs(size_t size, ...)
 	char **args = calloc(size, sizeof(char *));
 
 	va_start(_arg_list, size);
-	for (int i = 0; i < size; ++i)
+	for (size_t i = 0; i < size; ++i)
 		args[i] = va_arg(_arg_list, char *);
 
 	va_end(_arg_list);
